@@ -1,7 +1,8 @@
+from http.client import responses
 from re import I
 from turtle import pos, title
 from typing import Optional
-from fastapi import  FastAPI
+from fastapi import  FastAPI , Response , status , HTTPException
 from fastapi.params import Body
 from pydantic import BaseModel
 from random import randrange
@@ -22,6 +23,10 @@ def find_post(id):
         if i["id"] == id:
             return i
 
+def find_index_post(id):
+    for i , p in enumerate(my_posts):
+        if p['id'] == id:
+            return i
 
 @app.get("/")
 def root():
@@ -40,8 +45,11 @@ def create_post(post: Post):
 
 
 @app.get("/get/posts/{id}")
-def get_post(id: int):
+def get_post(id: int , response: Response):
     post = find_post(id)
+    if not post:
+        raise HTTPException(status_code= status.HTTP_404_NOT_FOUND, detail=f"post with id : {id} was not found")
+        # response.status_code = status.HTTP_404_NOT_FOUND
     return {"post_details": post}
 
 
@@ -49,3 +57,9 @@ def get_post(id: int):
 def get_latestpost():
     post = my_posts[len(my_posts)-1]
     return {"latest_post": post}
+
+@app.delete("/delete/post/{id}")
+def delete_post():
+    index = find_index_post(id)
+    my_posts.pop(index)
+    return {"message": 'post succefully deleted'}
