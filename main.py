@@ -44,7 +44,7 @@ def create_post(post: Post):
     return {'post': post_disc}
 
 
-@app.get("/get/posts/{id}")
+@app.get("/get/postsssss/{id}")
 def get_post(id: int , response: Response):
     post = find_post(id)
     if not post:
